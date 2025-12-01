@@ -1,8 +1,18 @@
 {
   "name": "css-zod-schemas",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.3",
   "description": "Zod Schemas for CSS values",
-  "main": "index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./*": {
+      "default": "./dist/*.js",
+      "types": "./dist/*.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsdown"
   },
@@ -14,7 +24,6 @@
   ],
   "author": "alexgagnon",
   "license": "ISC",
-  "type": "module",
   "peerDependencies": {
     "zod": "^4.1.13"
   },

@@ -42,5 +42,7 @@
     "skipLibCheck": true,
 
     // "isolatedDeclarations": true,
-  }
+  },
+
+  "exclude": ["src/*.test.ts"]
 }

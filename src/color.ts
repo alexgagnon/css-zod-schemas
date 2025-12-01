@@ -12,7 +12,7 @@ import {
   WS_REQUIRED,
   PERCENTAGE,
   withFrom,
-} from './regexes.js';
+} from './common/regexes.js';
 
 // ============================================================================
 // CSS Color Schema
