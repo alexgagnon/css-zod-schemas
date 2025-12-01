@@ -1,4 +1,18 @@
 import { z } from 'zod/mini';
+import {
+  HEX,
+  BYTE_VALUE,
+  NUMBER_OR_NONE,
+  SIGNED_NUMBER_OR_NONE,
+  ANGLE,
+  ANGLE_OR_NONE,
+  ALPHA,
+  ALPHA_SLASH,
+  WS,
+  WS_REQUIRED,
+  PERCENTAGE,
+  withFrom,
+} from './regexes.js';
 
 // ============================================================================
 // CSS Color Schema
@@ -56,40 +70,63 @@ const systemColors = [
 // Regex patterns for color functions
 const patterns = {
   // Hex colors: #RGB, #RGBA, #RRGGBB, #RRGGBBAA
-  hex: /^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/,
+  hex: new RegExp(`^#(?:${HEX}{3,4}|${HEX}{6}|${HEX}{8})$`),
   
-  // rgb() and rgba() - modern space syntax and legacy comma syntax
-  rgb: /^rgba?\(\s*(?:(?:\d{1,3}%?|\d*\.\d+%?|none)\s+){2}(?:\d{1,3}%?|\d*\.\d+%?|none)(?:\s*\/\s*(?:\d*\.?\d+%?|none))?\s*\)$|^rgba?\(\s*(?:\d{1,3}%?|\d*\.\d+%?)\s*,\s*(?:\d{1,3}%?|\d*\.\d+%?)\s*,\s*(?:\d{1,3}%?|\d*\.\d+%?)(?:\s*,\s*(?:\d*\.?\d+%?))?\s*\)$/i,
+  // rgb() and rgba() - modern space syntax, legacy comma syntax, and relative colors
+  rgb: new RegExp(
+    `^rgba?\\(${WS}${withFrom(`(?:${BYTE_VALUE}${WS_REQUIRED}){2}${BYTE_VALUE}(?:${ALPHA_SLASH})?`)}${WS}\\)$` +
+    `|^rgba?\\(${WS}${BYTE_VALUE}${WS},${WS}${BYTE_VALUE}${WS},${WS}${BYTE_VALUE}(?:${WS},${WS}${ALPHA})?${WS}\\)$`,
+    'i'
+  ),
   
-  // hsl() and hsla()
-  hsl: /^hsla?\(\s*(?:(?:\d*\.?\d+(?:deg|grad|rad|turn)?|none)\s+){1,2}(?:\d*\.?\d+%?|none)\s+(?:\d*\.?\d+%?|none)(?:\s*\/\s*(?:\d*\.?\d+%?|none))?\s*\)$|^hsla?\(\s*\d*\.?\d+(?:deg|grad|rad|turn)?\s*,\s*\d*\.?\d+%\s*,\s*\d*\.?\d+%(?:\s*,\s*\d*\.?\d+%?)?\s*\)$/i,
+  // hsl() and hsla() - with relative color support
+  hsl: new RegExp(
+    `^hsla?\\(${WS}${withFrom(`(?:${ANGLE_OR_NONE}${WS_REQUIRED}){1,2}${NUMBER_OR_NONE}${WS_REQUIRED}${NUMBER_OR_NONE}(?:${ALPHA_SLASH})?`)}${WS}\\)$` +
+    `|^hsla?\\(${WS}${ANGLE}${WS},${WS}${PERCENTAGE}${WS},${WS}${PERCENTAGE}(?:${WS},${WS}${ALPHA})?${WS}\\)$`,
+    'i'
+  ),
   
-  // hwb()
-  hwb: /^hwb\(\s*(?:\d*\.?\d+(?:deg|grad|rad|turn)?|none)\s+(?:\d*\.?\d+%?|none)\s+(?:\d*\.?\d+%?|none)(?:\s*\/\s*(?:\d*\.?\d+%?|none))?\s*\)$/i,
+  // hwb() - with relative color support
+  hwb: new RegExp(
+    `^hwb\\(${WS}${withFrom(`${ANGLE_OR_NONE}${WS_REQUIRED}${NUMBER_OR_NONE}${WS_REQUIRED}${NUMBER_OR_NONE}(?:${ALPHA_SLASH})?`)}${WS}\\)$`,
+    'i'
+  ),
   
-  // lab()
-  lab: /^lab\(\s*(?:\d*\.?\d+%?|none)\s+(?:-?\d*\.?\d+%?|none)\s+(?:-?\d*\.?\d+%?|none)(?:\s*\/\s*(?:\d*\.?\d+%?|none))?\s*\)$/i,
+  // lab() - with relative color support
+  lab: new RegExp(
+    `^lab\\(${WS}${withFrom(`${NUMBER_OR_NONE}${WS_REQUIRED}${SIGNED_NUMBER_OR_NONE}${WS_REQUIRED}${SIGNED_NUMBER_OR_NONE}(?:${ALPHA_SLASH})?`)}${WS}\\)$`,
+    'i'
+  ),
   
-  // lch()
-  lch: /^lch\(\s*(?:\d*\.?\d+%?|none)\s+(?:\d*\.?\d+%?|none)\s+(?:\d*\.?\d+(?:deg|grad|rad|turn)?|none)(?:\s*\/\s*(?:\d*\.?\d+%?|none))?\s*\)$/i,
+  // lch() - with relative color support
+  lch: new RegExp(
+    `^lch\\(${WS}${withFrom(`${NUMBER_OR_NONE}${WS_REQUIRED}${NUMBER_OR_NONE}${WS_REQUIRED}${ANGLE_OR_NONE}(?:${ALPHA_SLASH})?`)}${WS}\\)$`,
+    'i'
+  ),
   
-  // oklab()
-  oklab: /^oklab\(\s*(?:\d*\.?\d+%?|none)\s+(?:-?\d*\.?\d+%?|none)\s+(?:-?\d*\.?\d+%?|none)(?:\s*\/\s*(?:\d*\.?\d+%?|none))?\s*\)$/i,
+  // oklab() - with relative color support
+  oklab: new RegExp(
+    `^oklab\\(${WS}${withFrom(`${NUMBER_OR_NONE}${WS_REQUIRED}${SIGNED_NUMBER_OR_NONE}${WS_REQUIRED}${SIGNED_NUMBER_OR_NONE}(?:${ALPHA_SLASH})?`)}${WS}\\)$`,
+    'i'
+  ),
   
-  // oklch()
-  oklch: /^oklch\(\s*(?:\d*\.?\d+%?|none)\s+(?:\d*\.?\d+%?|none)\s+(?:\d*\.?\d+(?:deg|grad|rad|turn)?|none)(?:\s*\/\s*(?:\d*\.?\d+%?|none))?\s*\)$/i,
+  // oklch() - with relative color support
+  oklch: new RegExp(
+    `^oklch\\(${WS}${withFrom(`${NUMBER_OR_NONE}${WS_REQUIRED}${NUMBER_OR_NONE}${WS_REQUIRED}${ANGLE_OR_NONE}(?:${ALPHA_SLASH})?`)}${WS}\\)$`,
+    'i'
+  ),
   
-  // color() - generic color space function
-  color: /^color\(\s*(?:srgb|srgb-linear|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz|xyz-d50|xyz-d65)(?:\s+(?:-?\d*\.?\d+%?|none)){3}(?:\s*\/\s*(?:\d*\.?\d+%?|none))?\s*\)$/i,
+  // color() - generic color space function with relative color support
+  color: new RegExp(
+    `^color\\(${WS}${withFrom(`(?:srgb|srgb-linear|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz|xyz-d50|xyz-d65)(?:${WS_REQUIRED}${SIGNED_NUMBER_OR_NONE}){3}(?:${ALPHA_SLASH})?`)}${WS}\\)$`,
+    'i'
+  ),
   
   // color-mix()
   colorMix: /^color-mix\(\s*in\s+[\w-]+/i,
   
   // light-dark()
   lightDark: /^light-dark\(\s*.+\s*,\s*.+\s*\)$/i,
-  
-  // Relative color syntax (from keyword)
-  relativeColor: /^(?:rgb|hsl|hwb|lab|lch|oklab|oklch|color)\(\s*from\s+/i,
 };
 
 /**
@@ -121,12 +158,50 @@ function isValidCssColor(value: unknown): boolean {
   return Object.values(patterns).some(regex => regex.test(value.trim()));
 }
 
-export const cssColorSchema = z.string().check(
+export const CssColorSchema = z.string().check(
   z.refine(isValidCssColor, { error: 'Invalid CSS color value' })
 );
 
-// Export types - union of named colors, system colors, and generic string for intellisense
-export type CssColor = typeof namedColors[number] | typeof systemColors[number] | (string & {});
+/**
+ * CSS color value - supports all CSS color formats
+ * @example 'red'
+ * @example 'transparent'
+ * @example 'currentcolor'
+ * @example '#ff0000'
+ * @example '#f00'
+ * @example 'rgb(255, 0, 0)'
+ * @example 'rgb(255 0 0 / 0.5)'
+ * @example 'hsl(0, 100%, 50%)'
+ * @example 'hsl(0deg 100% 50%)'
+ * @example 'hwb(0 0% 0%)'
+ * @example 'lab(50% 50 50)'
+ * @example 'lch(50% 50 180)'
+ * @example 'oklch(0.5 0.2 180)'
+ * @example 'color(display-p3 1 0 0)'
+ * @example 'color-mix(in srgb, red, blue)'
+ * @example 'light-dark(white, black)'
+ */
+export type CssColor = 
+  | typeof namedColors[number] 
+  | typeof systemColors[number]
+  | `#${string}`
+  | `rgb(${string})`
+  | `rgba(${string})`
+  | `hsl(${string})`
+  | `hsla(${string})`
+  | `hwb(${string})`
+  | `lab(${string})`
+  | `lch(${string})`
+  | `oklab(${string})`
+  | `oklch(${string})`
+  | `color(${string})`
+  | `color-mix(${string})`
+  | `light-dark(${string})`
+  | 'currentcolor'
+  | 'currentColor'
+  | 'inherit'
+  | 'initial'
+  | 'unset';
 
 // Export the named colors and system colors for reference
 export { namedColors, systemColors };

@@ -6,7 +6,12 @@
   "scripts": {
     "build": "tsdown"
   },
-  "keywords": ["css", "zod", "schemas", "validation"],
+  "keywords": [
+    "css",
+    "zod",
+    "schemas",
+    "validation"
+  ],
   "author": "alexgagnon",
   "license": "ISC",
   "type": "module",
@@ -17,7 +22,8 @@
     "oxfmt": "^0.15.0",
     "oxlint": "^1.30.0",
     "tsdown": "^0.17.0-beta.4",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.14"
   },
   "files": [
     "dist"
