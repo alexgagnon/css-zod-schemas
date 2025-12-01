@@ -1,0 +1,25 @@
+{
+  "name": "css-zod-schemas",
+  "version": "1.0.0-alpha.1",
+  "description": "Zod Schemas for CSS values",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsdown"
+  },
+  "keywords": ["css", "zod", "schemas", "validation"],
+  "author": "alexgagnon",
+  "license": "ISC",
+  "type": "module",
+  "peerDependencies": {
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.15.0",
+    "oxlint": "^1.30.0",
+    "tsdown": "^0.17.0-beta.4",
+    "typescript": "^5.9.3"
+  },
+  "files": [
+    "dist"
+  ]
+}
